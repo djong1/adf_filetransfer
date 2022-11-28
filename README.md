@@ -15,3 +15,17 @@ You can set the lasmodified in the settings of an activity. For instance if you 
 - End Time (UTC): @getPastTime(1,'minute')
 
 ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/Lastmodified.png)
+
+### Filter Files
+
+Do not schedule a copy pipeline every xx minutes, instead run the copy pipeline only when a file actualy exists in the source. The reasson is that scheduling a copy pipeline frequently can be extremely costly. You can achive this by using a trigger, for instance a storage trigger or http trigger. 
+When you are not able to use an external trigger do the following: 
+
+- Use a GET METADATA activity to get a list of files that need to be copied
+- Use a FOR EACH to copy these files from source to target
+
+The benfit is that the "expensive" activity COPY is only executed when the file exists. This will save you costs. For example running a simple copy activity every 10 minutes for 350 files will cost you $12k per month, using the above approach will cost you $123,-.
+
+![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist.png)
+![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles.png)
+![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile.png)
