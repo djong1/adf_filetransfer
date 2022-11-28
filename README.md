@@ -37,8 +37,8 @@ The benfit is that the "expensive" activity COPY is only executed when the file 
 
 In the foreach activity we need to copy the file from source tor target and delete it in the destination when completed:
 
-![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile.png)
+- ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile.png)
 - @{item().name} is the name of the file that is parsed into the foreach
 - @pipeline().parameters.SourceStore_Directory the source path is a pipeline parameter, if this is not a fixed path use a getmetadata to get the filepath
-- 
+-
 
