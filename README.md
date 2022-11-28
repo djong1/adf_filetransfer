@@ -27,18 +27,18 @@ When you are not able to use an external trigger do the following:
 
 The benfit is that the "expensive" activity COPY is only executed when the file exists. This will save you costs. For example running a simple copy activity every 10 minutes for 350 files will cost you $12k per month, using the above approach will cost you $123,-.
 
-![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist.png)
-![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles.png)
 - @activity('FilterFilesOnly').output.value (use the output value from the FiltersFileOnly activity)
-![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile.png)
 - activity's are executed in paralel with MAX 20 jobs in paralel
 
 ### Copy and delete files
 
 In the foreach activity we need to copy the file from source tor target and delete it in the destination when completed:
 
-- ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile.png)
 - @{item().name} is the name of the file that is parsed into the foreach
 - @pipeline().parameters.SourceStore_Directory the source path is a pipeline parameter, if this is not a fixed path use a getmetadata to get the filepath
--
+
 
