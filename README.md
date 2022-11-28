@@ -14,4 +14,4 @@ You can set the lasmodified in the settings of an activity. For instance if you 
 - Start time (UTC): @getPastTime(11,'minute')
 - End Time (UTC): @getPastTime(1,'minute')
 
-![Image Alt Text](https://tleapps.com/wp-content/uploads/2021/12/covid_icon_001.png)
+![Image Alt Text]((https://gp3scdnstorage.blob.core.windows.net/private/Lastmodified.png))
