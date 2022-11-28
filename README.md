@@ -1,4 +1,4 @@
-# Optimized ADF file transfer pipelines
+# Optimized ADF file copy pipelines
 Many times Azure Data Factory is used to transfer files (large or small) from A to B. Since most of the times these files are a crucial for system integration, reliability and recoverability are crucial. Many times I see peopel using "copy" activity only without some smart handling and retry. This can result in high costs and unreliable file transfers. 
 
 ## Best practices
@@ -7,6 +7,7 @@ Many times Azure Data Factory is used to transfer files (large or small) from A 
 - Use Lastmodified alligned with you schedule to prevent same files to be copied multiple times (reliabilty / costs / performance)
 - Use a trigger based schedule, so only trigger the pipeline when a file is published / present (costs)
 - Use filters in time based triggers (costs)
+- Delete the file in the source after copy is completed in seperate activity 
 
 ### Lastmodified
 
@@ -28,4 +29,16 @@ The benfit is that the "expensive" activity COPY is only executed when the file 
 
 ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist.png)
 ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles.png)
+- @activity('FilterFilesOnly').output.value (use the output value from the FiltersFileOnly activity)
 ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile.png)
+- activity's are executed in paralel with MAX 20 jobs in paralel
+
+### Copy and delete files
+
+In the foreach activity we need to copy the file from source tor target and delete it in the destination when completed:
+
+![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile.png)
+- @{item().name} is the name of the file that is parsed into the foreach
+- @pipeline().parameters.SourceStore_Directory the source path is a pipeline parameter, if this is not a fixed path use a getmetadata to get the filepath
+- 
+
