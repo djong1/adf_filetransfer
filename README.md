@@ -43,7 +43,23 @@ The GET METADATA will lookup all files and folders in a given path that are post
 In the foreach activity we need to copy the file from source tor target and delete it in the destination when completed:
 
   ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/delete.png)
 - @{item().name} is the name of the file that is parsed into the foreach
 - @pipeline().parameters.SourceStore_Directory the source path is a pipeline parameter, if this is not a fixed path use a getmetadata to get the filepath
+
+### Parameters
+
+In the above examples you can see that I have used parameters:
+- On the Pipeline level, to set the SOURCE directory to scan and to set the TARGRet directory to copy files in
+- On the activity level refferencing to the outcome of previous steps
+- On the dataset level to reference to path and files
+
+You can go wild with parameters and make a pipeline, activities and datasets completely parametrized and dynamic. This will reduce the numer of predefined pipelines and dasets however it can make it complex to master. 
+
+### Copy files from multiple directories
+
+In the previous example I explained how you can copy mutiple files from a single folder or container. In this exampl I will show how you can copy files from multiple directories or containers.
+
+
 
 
