@@ -169,7 +169,7 @@
                                 {
                                     "activity": "CopyOneFile",
                                     "dependencyConditions": [
-                                        "Skipped"
+                                        "Succeeded"
                                     ]
                                 }
                             ],
