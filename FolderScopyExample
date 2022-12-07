@@ -1,0 +1,242 @@
+{
+    "name": "FolderS copy example",
+    "properties": {
+        "description": "copy files from multiple folders",
+        "activities": [
+            {
+                "name": "GetItemList",
+                "type": "GetMetadata",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataset": {
+                        "referenceName": "sourcefiles",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "Directory": {
+                                "value": "@pipeline().parameters.parentFolder",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    "fieldList": [
+                        "childItems",
+                        "itemName"
+                    ],
+                    "storeSettings": {
+                        "type": "AzureFileStorageReadSettings",
+                        "recursive": true,
+                        "enablePartitionDiscovery": false
+                    },
+                    "formatSettings": {
+                        "type": "BinaryReadSettings"
+                    }
+                }
+            },
+            {
+                "name": "ForEachSubFolder",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "FilterFoldersOnly",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('FilterFoldersOnly').output.value",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "getFileName",
+                            "type": "GetMetadata",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "0.12:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "dataset": {
+                                    "referenceName": "sourcefiles",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "Directory": {
+                                            "value": "@concat(pipeline().parameters.parentFolder,'/',item().name)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "fieldList": [
+                                    "childItems",
+                                    "itemName"
+                                ],
+                                "storeSettings": {
+                                    "type": "AzureFileStorageReadSettings",
+                                    "recursive": true,
+                                    "modifiedDatetimeStart": {
+                                        "value": "@getPastTime(110,'minute')",
+                                        "type": "Expression"
+                                    },
+                                    "modifiedDatetimeEnd": {
+                                        "value": "@getPastTime(1,'minute')",
+                                        "type": "Expression"
+                                    },
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "BinaryReadSettings"
+                                }
+                            }
+                        },
+                        {
+                            "name": "filesCount",
+                            "type": "SetVariable",
+                            "dependsOn": [
+                                {
+                                    "activity": "getFileName",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "variableName": "filesCount",
+                                "value": {
+                                    "value": "@string(length(activity('getFileName').output.childItems))",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        {
+                            "name": "If Condition1",
+                            "type": "IfCondition",
+                            "dependsOn": [
+                                {
+                                    "activity": "filesCount",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "expression": {
+                                    "value": "@greater(variables('filesCount'),'0')",
+                                    "type": "Expression"
+                                },
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "Copydata",
+                                        "type": "Copy",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "source": {
+                                                "type": "BinarySource",
+                                                "storeSettings": {
+                                                    "type": "AzureFileStorageReadSettings",
+                                                    "recursive": true,
+                                                    "deleteFilesAfterCompletion": true
+                                                },
+                                                "formatSettings": {
+                                                    "type": "BinaryReadSettings"
+                                                }
+                                            },
+                                            "sink": {
+                                                "type": "BinarySink",
+                                                "storeSettings": {
+                                                    "type": "AzureBlobStorageWriteSettings"
+                                                }
+                                            },
+                                            "enableStaging": false
+                                        },
+                                        "inputs": [
+                                            {
+                                                "referenceName": "sourcefiles",
+                                                "type": "DatasetReference",
+                                                "parameters": {
+                                                    "Directory": {
+                                                        "value": "@concat(pipeline().parameters.parentFolder,'/',item().name)",
+                                                        "type": "Expression"
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "outputs": [
+                                            {
+                                                "referenceName": "targetblobs",
+                                                "type": "DatasetReference",
+                                                "parameters": {
+                                                    "Directory": "@concat(pipeline().parameters.parentFolder,'/',item().name)"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "FilterFoldersOnly",
+                "type": "Filter",
+                "dependsOn": [
+                    {
+                        "activity": "GetItemList",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('GetItemList').output.childItems",
+                        "type": "Expression"
+                    },
+                    "condition": {
+                        "value": "@equals(item().type, 'Folder')",
+                        "type": "Expression"
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "parentFolder": {
+                "type": "string"
+            }
+        },
+        "variables": {
+            "filesCount": {
+                "type": "String"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2022-11-28T12:00:09Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
