@@ -9,7 +9,8 @@ In order to optimise your pipelines it is a best practise to first verify on new
 - Use Lastmodified alligned with your schedule to prevent same files to be copied multiple times (reliabilty / costs / performance)
 - Use a trigger based schedule, so only trigger the pipeline when a file is published / present (costs)
 - Use filters in time based triggers (costs)
-- Delete the file in the source after copy is completed in seperate activity 
+- Delete the file in the source after copy is completed in seperate activity
+- Use parameters to reduce the number of pipelines needed 
 
 ### Lastmodified
 
