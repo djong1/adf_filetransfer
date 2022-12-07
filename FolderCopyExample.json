@@ -1,0 +1,221 @@
+{
+    "name": "Folder copy example",
+    "properties": {
+        "description": "copy all files inside a folder",
+        "activities": [
+            {
+                "name": "GetFileList",
+                "type": "GetMetadata",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataset": {
+                        "referenceName": "sourcefiles",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "Directory": {
+                                "value": "@pipeline().parameters.SourceStore_Directory",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    "fieldList": [
+                        "childItems"
+                    ],
+                    "storeSettings": {
+                        "type": "AzureFileStorageReadSettings",
+                        "recursive": true,
+                        "modifiedDatetimeStart": {
+                            "value": "@getPastTime(11,'minute')",
+                            "type": "Expression"
+                        },
+                        "modifiedDatetimeEnd": {
+                            "value": "@getPastTime(1,'minute')",
+                            "type": "Expression"
+                        },
+                        "enablePartitionDiscovery": false
+                    },
+                    "formatSettings": {
+                        "type": "BinaryReadSettings"
+                    }
+                }
+            },
+            {
+                "name": "FilterFilesOnly",
+                "type": "Filter",
+                "dependsOn": [
+                    {
+                        "activity": "GetFileList",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('GetFileList').output.childItems",
+                        "type": "Expression"
+                    },
+                    "condition": {
+                        "value": "@equals(item().type, 'File')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "ForEachFile",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "FilterFilesOnly",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('FilterFilesOnly').output.value",
+                        "type": "Expression"
+                    },
+                    "batchCount": 20,
+                    "activities": [
+                        {
+                            "name": "CopyOneFile",
+                            "type": "Copy",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "0.01:00:00",
+                                "retry": 3,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "BinarySource",
+                                    "storeSettings": {
+                                        "type": "AzureFileStorageReadSettings",
+                                        "maxConcurrentConnections": 20,
+                                        "recursive": false,
+                                        "deleteFilesAfterCompletion": false
+                                    },
+                                    "formatSettings": {
+                                        "type": "BinaryReadSettings"
+                                    }
+                                },
+                                "sink": {
+                                    "type": "BinarySink",
+                                    "storeSettings": {
+                                        "type": "AzureFileStorageWriteSettings",
+                                        "maxConcurrentConnections": 20
+                                    }
+                                },
+                                "enableStaging": false,
+                                "parallelCopies": 20,
+                                "dataIntegrationUnits": 2
+                            },
+                            "inputs": [
+                                {
+                                    "referenceName": "sourcefile",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "Filename": {
+                                            "value": "@{item().name}",
+                                            "type": "Expression"
+                                        },
+                                        "Directory": {
+                                            "value": "@pipeline().parameters.SourceStore_Directory",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "referenceName": "targetfiles",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "Directory": {
+                                            "value": "@pipeline().parameters.TargetStore_Directory",
+                                            "type": "Expression"
+                                        },
+                                        "filename": {
+                                            "value": "@item().name",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "DeleteFile",
+                            "type": "Delete",
+                            "dependsOn": [
+                                {
+                                    "activity": "CopyOneFile",
+                                    "dependencyConditions": [
+                                        "Skipped"
+                                    ]
+                                }
+                            ],
+                            "policy": {
+                                "timeout": "0.12:00:00",
+                                "retry": 3,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "dataset": {
+                                    "referenceName": "sourcefile",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "Filename": {
+                                            "value": "@{item().name}",
+                                            "type": "Expression"
+                                        },
+                                        "Directory": {
+                                            "value": "@pipeline().parameters.SourceStore_Directory",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "enableLogging": false,
+                                "storeSettings": {
+                                    "type": "AzureFileStorageReadSettings",
+                                    "recursive": false,
+                                    "enablePartitionDiscovery": false
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "SourceStore_Directory": {
+                "type": "string",
+                "defaultValue": "Outgoing"
+            },
+            "TargetStore_Directory": {
+                "type": "string",
+                "defaultValue": "Incomming"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2022-10-04T19:13:28Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
