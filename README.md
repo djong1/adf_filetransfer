@@ -18,7 +18,7 @@ You can set the lasmodified in the settings of an activity. For instance if you 
 - Start time (UTC): @getPastTime(11,'minute')
 - End Time (UTC): @getPastTime(1,'minute')
 
-![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/Lastmodified.png)
+![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/Lastmodified1.png)
 
 ### Filter Files
 
@@ -32,18 +32,18 @@ The benfit is that the "expensive" activity COPY is only executed when the file 
 
 The GET METADATA will lookup all files and folders in a given path that are posted in the last 11 minutes (-1), the FILTER activity will filter on files.  
 
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist.png)
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist1.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles1.png)
 - @activity('FilterFilesOnly').output.value (use the output value from the FiltersFileOnly activity)
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile1.png)
 - activity's are executed in paralel with MAX 20 jobs in paralel
 
 ### Copy and delete files
 
 In the foreach activity we need to copy the file from source tor target and delete it in the destination when completed:
 
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile.png)
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/delete.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/copyonefile1.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/delete1.png)
 - @{item().name} is the name of the file that is parsed into the foreach
 - @pipeline().parameters.SourceStore_Directory the source path is a pipeline parameter, if this is not a fixed path use a getmetadata to get the filepath
 
