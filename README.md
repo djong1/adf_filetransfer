@@ -12,6 +12,9 @@ In order to optimise your pipelines it is a best practise to first verify on new
 - Delete the file in the source after copy is completed in seperate activity
 - Use parameters to reduce the number of pipelines needed 
 
+# Copy pipeline for a single directorie / container.
+In this section I'll explain how you can create a smart copy pipeline to pick-up files from one directorie / container when the exist, if there is no file the pipeline stops executing and it will save you costs.
+
 ### Lastmodified.
 
 You can set the lasmodified in the settings of an activity. For instance if you want to get a list of files in the Source Location A, you can use GET METADATA and in the settings parameter you can set the lastmodified configuration. If your schedule runs every 10 minutes you only want the files that are placed in the previous 10 minutes, you can do this by: 
@@ -56,7 +59,7 @@ In the above examples you can see that I have used parameters:
 
 You can go wild with parameters and make a pipeline, activities and datasets completely parametrized and dynamic. This will reduce the number of predefined pipelines and datasets however it can make it complex to master. 
 
-## Copy files from multiple directories.
+# Copy pipeline for files from multiple directories.
 
 In the previous example I explained how you can copy multiple files from a single folder or container. In this example I will show how you can copy files from multiple directories or containers. Below you see the complete pipeline:
 ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/pipelinemultiplefolders.png)
@@ -69,6 +72,8 @@ In the previous example I explained how you can copy multiple files from a singl
 Note: you can optimize this pipeline by adding a LASTMODIFIED parameter to copy files only one time, if the schedule is shorter than the pipeline run, typically when exchanging large files.
 
 **see code sample in repo**
+
+
 
 
 
