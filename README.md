@@ -63,7 +63,8 @@ In the previous example I explained how you can copy multiple files from a singl
 - first step is to get a list of directories
 - second step is to filter out the directories
 - do a FOR EACH for every directory found
-- for directories with one or multiple files a copy task is executed
+- get the number of files and file names in the directorie
+- IF directories with one or multiple files a copy task is executed
 
 Note: you can optimize this pipeline by adding a LASTMODIFIED parameter to copy files only one time, if the schedule is shorter than the pipeline run, typically when exchanging large files.
 
