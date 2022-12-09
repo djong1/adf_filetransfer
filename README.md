@@ -3,7 +3,7 @@ Usually Azure Data Factory (ADF)is used to transfer files (large or small) from 
 
 In order to optimise your pipelines it is a best practise to first verify on new files that are not use (by an already started integration run time).This verification can be done with one single integration run time. Based on the result only integration run times will be started for the new files that are not in use. So when applying this optimisation for a larger the number of files you want to keep up date in the Destination Location B, the higher the reliability and the lower the total cost. Below explains the details how to configure optimised ADF pipelines to benefit from reliability and cost.
 
-## Best practices
+## Best practices.
 
 - Use Lastmodified to make sure that the file you copy is not in use (reliability)
 - Use Lastmodified alligned with your schedule to prevent same files to be copied multiple times (reliabilty / costs / performance)
@@ -12,7 +12,7 @@ In order to optimise your pipelines it is a best practise to first verify on new
 - Delete the file in the source after copy is completed in seperate activity
 - Use parameters to reduce the number of pipelines needed 
 
-### Lastmodified
+### Lastmodified.
 
 You can set the lasmodified in the settings of an activity. For instance if you want to get a list of files in the Source Location A, you can use GET METADATA and in the settings parameter you can set the lastmodified configuration. If your schedule runs every 10 minutes you only want the files that are placed in the previous 10 minutes, you can do this by: 
 - Start time (UTC): @getPastTime(11,'minute')
@@ -20,7 +20,7 @@ You can set the lasmodified in the settings of an activity. For instance if you 
 
 ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/Lastmodified1.png)
 
-### Filter Files
+### Filter Files.
 
 Do not schedule a copy pipeline every xx minutes, instead run the copy pipeline only when a file actualy exists in the Source Location A. The reasson is that scheduling a copy pipeline frequently can be extremely costly. You can achieve this by using a trigger, for instance a storage trigger or http trigger. 
 When you are not able to use an external trigger do the following: 
@@ -38,7 +38,7 @@ The GET METADATA will lookup all files and folders in a given path that are post
   ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile1.png)
 - activity's are executed in paralel with MAX 20 jobs in paralel
 
-### Copy and delete files
+### Copy and delete files.
 
 In the foreach activity we need to copy the file from source tor target and delete it in the destination when completed:
 
@@ -47,7 +47,7 @@ In the foreach activity we need to copy the file from source tor target and dele
 - @{item().name} is the name of the file that is parsed into the foreach
 - @pipeline().parameters.SourceStore_Directory the source path is a pipeline parameter, if this is not a fixed path use a getmetadata to get the filepath
 
-### Parameters
+### Parameters.
 
 In the above examples you can see that I have used parameters:
 - On the Pipeline level, to set the SOURCE directory to scan and to set the TARGRet directory to copy files in
@@ -56,7 +56,7 @@ In the above examples you can see that I have used parameters:
 
 You can go wild with parameters and make a pipeline, activities and datasets completely parametrized and dynamic. This will reduce the number of predefined pipelines and datasets however it can make it complex to master. 
 
-### Copy files from multiple directories
+## Copy files from multiple directories.
 
 In the previous example I explained how you can copy multiple files from a single folder or container. In this example I will show how you can copy files from multiple directories or containers. Below you see the complete pipeline:
 ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/pipelinemultiplefolders.png)
@@ -67,6 +67,9 @@ In the previous example I explained how you can copy multiple files from a singl
 - IF directories with one or multiple files a copy task is executed
 
 Note: you can optimize this pipeline by adding a LASTMODIFIED parameter to copy files only one time, if the schedule is shorter than the pipeline run, typically when exchanging large files.
+
+**see code sample in repo**
+
 
 
 
