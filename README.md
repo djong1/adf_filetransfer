@@ -32,10 +32,10 @@ The benfit is that the "expensive" activity COPY is only executed when the file 
 
 The GET METADATA will lookup all files and folders in a given path that are posted in the last 11 minutes (-1), the FILTER activity will filter on files.  
 
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist.png)
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist1.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles1.png)
 - @activity('FilterFilesOnly').output.value (use the output value from the FiltersFileOnly activity)
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile1.png)
 - activity's are executed in paralel with MAX 20 jobs in paralel
 
 ### Copy and delete files
