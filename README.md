@@ -1,4 +1,4 @@
-# Optimized ADF file copy pipelines when you need to use a schedule based copy
+# Optimized ADF file copy pipelines when you need to use a schedule
 Usually Azure Data Factory (ADF)is used to transfer files (large or small) from A to B. Since most of the times these files are a crucial for system integration, reliability and recoverability are crucial. 
 
 ### Trigger or schedule
