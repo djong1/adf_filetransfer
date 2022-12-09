@@ -32,7 +32,7 @@ The benfit is that the "expensive" activity COPY is only executed when the file 
 
 The GET METADATA will lookup all files and folders in a given path that are posted in the last 11 minutes (-1), the FILTER activity will filter on files.  
 
-  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist1.png)
+  ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/getfilelist.png)
   ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/filterfiles1.png)
 - @activity('FilterFilesOnly').output.value (use the output value from the FiltersFileOnly activity)
   ![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/foreachfile1.png)
@@ -51,14 +51,22 @@ In the foreach activity we need to copy the file from source tor target and dele
 
 In the above examples you can see that I have used parameters:
 - On the Pipeline level, to set the SOURCE directory to scan and to set the TARGRet directory to copy files in
-- On the activity level refferencing to the outcome of previous steps
+- On the activity level referencing to the outcome of previous steps
 - On the dataset level to reference to path and files
 
-You can go wild with parameters and make a pipeline, activities and datasets completely parametrized and dynamic. This will reduce the numer of predefined pipelines and dasets however it can make it complex to master. 
+You can go wild with parameters and make a pipeline, activities and datasets completely parametrized and dynamic. This will reduce the number of predefined pipelines and datasets however it can make it complex to master. 
 
 ### Copy files from multiple directories
 
-In the previous example I explained how you can copy mutiple files from a single folder or container. In this exampl I will show how you can copy files from multiple directories or containers.
+In the previous example I explained how you can copy multiple files from a single folder or container. In this example I will show how you can copy files from multiple directories or containers. Below you see the complete pipeline:
+![Image Alt Text](https://gp3scdnstorage.blob.core.windows.net/private/pipelinemultiplefolders.png)
+- first step is to get a list of directories
+- second step is to filter out the directories
+- do a FOR EACH for every directory found
+- for directories with one or multiple files a copy task is executed
+
+Note: you can optimize this pipeline by adding a LASTMODIFIED parameter to copy files only one time, if the schedule is shorter than the pipeline run, typically when exchanging large files.
+
 
 
 
