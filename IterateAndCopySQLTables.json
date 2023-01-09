@@ -1,0 +1,111 @@
+{
+    "name": "3-IterateAndCopySQLTables",
+    "properties": {
+        "activities": [
+            {
+                "name": "IterateSQLTables",
+                "type": "ForEach",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@pipeline().parameters.tableList",
+                        "type": "Expression"
+                    },
+                    "isSequential": false,
+                    "activities": [
+                        {
+                            "name": "CopyData",
+                            "description": "Copy data from SQL database to SQL DW",
+                            "type": "Copy",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [
+                                {
+                                    "name": "bla",
+                                    "value": "@pipeline().parameters.tableList"
+                                }
+                            ],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "AzureSqlSource",
+                                    "sqlReaderQuery": {
+                                        "value": "select 'client_id' as Prefix, * from [@{item().TABLE_NAME}]",
+                                        "type": "Expression"
+                                    },
+                                    "partitionOption": "None"
+                                },
+                                "sink": {
+                                    "type": "DelimitedTextSink",
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageWriteSettings"
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextWriteSettings",
+                                        "quoteAllText": true,
+                                        "fileExtension": ".txt"
+                                    }
+                                },
+                                "enableStaging": false
+                            },
+                            "inputs": [
+                                {
+                                    "referenceName": "SourceDataset_2zc",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "cw_tableName": {
+                                            "value": "@{item().TABLE_NAME}",
+                                            "type": "Expression"
+                                        },
+                                        "cw_DBName": {
+                                            "value": "@pipeline().parameters.cw_DBName",
+                                            "type": "Expression"
+                                        },
+                                        "cw_DBServer": {
+                                            "value": "@pipeline().parameters.cw_DBServer",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "referenceName": "DestinationDataset_2zc",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "cw_fileName": {
+                                            "value": "@{item().TABLE_NAME}",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "tableList": {
+                "type": "Array"
+            },
+            "cw_DBName": {
+                "type": "string",
+                "defaultValue": "moet leeg / weg"
+            },
+            "cw_DBServer": {
+                "type": "string",
+                "defaultValue": "moet leeg / weg"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2019-05-15T18:17:24Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
