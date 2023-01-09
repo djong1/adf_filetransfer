@@ -1,0 +1,40 @@
+{
+    "name": "SourceDataset_4zc",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "AzureSqlDatabase1",
+            "type": "LinkedServiceReference",
+            "parameters": {
+                "DBName": {
+                    "value": "@dataset().cw_DBName",
+                    "type": "Expression"
+                },
+                "DBServer": {
+                    "value": "@dataset().cw_DBServer",
+                    "type": "Expression"
+                }
+            }
+        },
+        "parameters": {
+            "cw_tableName": {
+                "type": "string"
+            },
+            "cw_DBName": {
+                "type": "string"
+            },
+            "cw_DBServer": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "AzureSqlTable",
+        "schema": [],
+        "typeProperties": {
+            "tableName": {
+                "value": "@dataset().cw_tableName",
+                "type": "Expression"
+            }
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}
