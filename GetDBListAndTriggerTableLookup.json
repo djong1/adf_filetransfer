@@ -1,0 +1,95 @@
+{
+    "name": "1-GetDBListAndTriggerTableLookup",
+    "properties": {
+        "description": "Collect the list of databases on a server",
+        "activities": [
+            {
+                "name": "LookupDBList",
+                "description": "Retrieve the db list from Azure SQL server",
+                "type": "Lookup",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderQuery": "select database_id AS DB_ID, name AS DB_NAME from sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')",
+                        "partitionOption": "None"
+                    },
+                    "dataset": {
+                        "referenceName": "SourceDataset_2zc",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "cw_tableName": {
+                                "value": "@pipeline().parameters.cw_DBsytemtable",
+                                "type": "Expression"
+                            },
+                            "cw_DBName": {
+                                "value": "@pipeline().parameters.cw_DBsystemdatabase",
+                                "type": "Expression"
+                            },
+                            "cw_DBServer": {
+                                "value": "@pipeline().parameters.cw_DBServer",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    "firstRowOnly": false
+                }
+            },
+            {
+                "name": "TriggerTableLookup",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "LookupDBList",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "2-GetTableListAndTriggerCopyData",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                        "cw_DBServer": {
+                            "value": "@pipeline().parameters.cw_DBServer",
+                            "type": "Expression"
+                        },
+                        "dblist": {
+                            "value": "@activity('LookupDBList').output.value",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "cw_DBServer": {
+                "type": "string",
+                "defaultValue": "DBSERVERNAME"
+            },
+            "cw_DBsytemtable": {
+                "type": "string",
+                "defaultValue": "sys.databases"
+            },
+            "cw_DBsystemdatabase": {
+                "type": "string",
+                "defaultValue": "DBNAME"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2019-05-15T11:36:40Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
